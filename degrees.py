@@ -107,6 +107,7 @@ def shortest_path(source, target):
     """
     import time
     frontier = StackFrontier()
+    # frontier = QueueFrontier()
     start = Node(state=source, action=None, parent=None, step=0)
     frontier.add(start)
 

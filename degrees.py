@@ -71,7 +71,20 @@ def main():
         sys.exit("Person not found.")
 
     path = shortest_path(source, target)
-
+    """
+    if len(path) == 0:
+        print("Not connected.")
+    else:
+        for p1 in path:
+            degrees = len(p1)
+            print(f"{degrees} degrees of separation.")
+            p1 = [(None, source)] + p1
+            for i in range(degrees):
+                person1 = people[p1[i][1]]["name"]
+                person2 = people[p1[i + 1][1]]["name"]
+                movie = movies[p1[i + 1][0]]["title"]
+                print(f"{i + 1}: {person1} and {person2} starred in {movie}")
+"""
     if path is None:
         print("Not connected.")
     else:
@@ -85,6 +98,8 @@ def main():
             print(f"{i + 1}: {person1} and {person2} starred in {movie}")
 
 
+    
+
 def shortest_path(source, target):
     """
     Returns the shortest list of (movie_id, person_id) pairs
@@ -94,63 +109,60 @@ def shortest_path(source, target):
     """
     import time
     frontier = StackFrontier()
-    # Identify the start nodes
-    print("Source :", source)
-    print("Source neighbors:", neighbors_for_person(source))
-    print(people)
-    for movie_id, person_id in neighbors_for_person(source):
-        if person_id == source:
-            start = Node(state=(movie_id, person_id), parent=None, step=0)
-            # count_start += 1
-            # print(start.state)
-            frontier.add(start)
+    start = Node(state=source, action=None, parent=None, step=0)
+    frontier.add(start)
 
-    #Identify the goals
-    goals = []
-    # count_goal = 0
-    # print("Goal points are:")
-    for movie_id, person_id in neighbors_for_person(target):
-        if person_id == target:
-            goals.append((movie_id, person_id))
-            # count_goal += 1
-            # print((movie_id, person_id))
-
-    # count = count_start * count_goal
-    # print('Count is ', count)
-    explored_nodes = set()
+    # goal = Node(state=target, action=None, parent=None, step=0)
+  
+    explored_nodes = dict()
     solution = None
-    hit_count = 0
+    hit_count = dict()
     start_time = time.time()
+
+    #List all options which step is 3 for Emma and Jeniffer
+    solutions = []
+
     while True:
         if frontier.empty():
             print("Hit count: ", hit_count)
             print("Time cost: ", time.time()-start_time)
             return None if solution == None else solution[0]
+            # return None if len(solutions)==0 else solutions
         
         node = frontier.remove()
-        explored_nodes.add(node.state)
+        explored_nodes[node.state] = node.step
         
         
-        person_id = node.state[1]
+        parent_id = node.state
 
-        for state in neighbors_for_person(person_id):
-            if node.step > 6:
+        for neighbor in neighbors_for_person(parent_id):
+            if node.step > 5:
                 break
             # print("node.step", node.step)
-            if not frontier.contains_state(state) and state not in explored_nodes:
-                child = Node(state=state, parent=node, step=node.step+1)
-                if child.state in goals:
-                    hit_count += 1
-                    explored_nodes.add(node.state)
+            if neighbor[1] != parent_id and not frontier.contains_state(neighbor[1]) and (neighbor[1] not in explored_nodes.keys() or node.step+1<explored_nodes[neighbor[1]]):
+                child = Node(state=neighbor[1], action=neighbor[0], parent=node, step=node.step+1)
+                if child.state == target:
+                    
                     step = child.step
+                    if step in hit_count.keys():
+                        hit_count[step] += 1
+                    else:
+                        hit_count[step] = 1
+
                     links = []
                     while child.parent is not None:
-                        links.append(child.state)
+                        links.append((child.action, child.state))
                         child = child.parent
                     links.reverse()
                     # count -= 1
                     if solution == None or solution[1] > step:
                         solution = (links, step)
+                    
+                    # if step == 3:
+                    #    solutions.append(links)
+
+
+                    break
                 else:
                     frontier.add(child)
 

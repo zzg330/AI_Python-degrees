@@ -50,9 +50,7 @@ def load_data(directory):
                 movies[row["movie_id"]]["stars"].add(row["person_id"])
             except KeyError:
                 pass
-    # print("Rows of peoples ", len(people))
-    # print("Rows of names: ", len(names))
-    # print("Rows of movies: ", len(movies))
+
 
 def main():
     if len(sys.argv) > 2:
@@ -112,15 +110,14 @@ def shortest_path(source, target):
     start = Node(state=source, action=None, parent=None, step=0)
     frontier.add(start)
 
-    # goal = Node(state=target, action=None, parent=None, step=0)
   
     explored_nodes = dict()
     solution = None
     hit_count = dict()
     start_time = time.time()
 
-    #List all options which step is 3 for Emma and Jeniffer
-    solutions = []
+    # List all options which step is 3 for Emma and Jeniffer
+    # solutions = []
 
     while True:
         if frontier.empty():
@@ -130,38 +127,46 @@ def shortest_path(source, target):
             # return None if len(solutions)==0 else solutions
         
         node = frontier.remove()
+        
+        # Explored (person_id, step) is recorded
         explored_nodes[node.state] = node.step
         
         
         parent_id = node.state
 
         for neighbor in neighbors_for_person(parent_id):
+            # If the person is 5 steps away (or even more) from the source, give it up because of Six Degrees of Kevin Bacon, and it can definitely improve the performance
             if node.step > 5:
                 break
-            # print("node.step", node.step)
+            
+            # If can find a shorter path/step than the explored (person_id, step) for the certain person, explore it, otherwise, give it up to improve performance
             if neighbor[1] != parent_id and not frontier.contains_state(neighbor[1]) and (neighbor[1] not in explored_nodes.keys() or node.step+1<explored_nodes[neighbor[1]]):
                 child = Node(state=neighbor[1], action=neighbor[0], parent=node, step=node.step+1)
+                
                 if child.state == target:
                     
                     step = child.step
+                    # Recode the hit count for different steps/length of the path
                     if step in hit_count.keys():
                         hit_count[step] += 1
                     else:
                         hit_count[step] = 1
 
+                    # Organize the being returned result via the node's parent link 
                     links = []
                     while child.parent is not None:
                         links.append((child.action, child.state))
                         child = child.parent
                     links.reverse()
-                    # count -= 1
+                    
+                    # Always fetch the shortest path if have.!!!!
                     if solution == None or solution[1] > step:
                         solution = (links, step)
                     
                     # if step == 3:
-                    #    solutions.append(links)
+                    #    solutions.append(links)    
 
-
+                    # If the child is the target, not explore other neighbors any more.
                     break
                 else:
                     frontier.add(child)

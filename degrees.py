@@ -132,7 +132,7 @@ def shortest_path(source, target):
         node = frontier.remove()
         
         # Explored {person_id:(step, movie_id)} is recorded
-        explored_nodes[node.state] = (node.step, node.action)
+        explored_nodes[node.state] = node.step
         explored_num += 1
         
         
@@ -140,12 +140,11 @@ def shortest_path(source, target):
 
         for neighbor in neighbors_for_person(parent_id):
             # If the person is 5 steps away (or even more) from the source, give it up because of Six Degrees of Kevin Bacon, and it can definitely improve the performance
-            if node.step > 2:
+            if node.step > 6:
                 break
             
             # If can find a shorter path/step than the explored (person_id, step) for the certain person, explore it, otherwise, give it up to improve performance
-            if neighbor[1] != parent_id and not frontier.contains_state(neighbor[1]) and (neighbor[1] not in explored_nodes.keys() or node.step+1 < explored_nodes[neighbor[1]][0]
-                or (node.step+1 == explored_nodes[neighbor[1]][0] and neighbor[0] != explored_nodes[neighbor[1]][1])):
+            if neighbor[1] != parent_id and not frontier.contains_state(neighbor[1]) and (neighbor[1] not in explored_nodes.keys() or node.step+1 < explored_nodes[neighbor[1]]):
                 child = Node(state=neighbor[1], action=neighbor[0], parent=node, step=node.step+1)
                 
                 if child.state == target:

@@ -113,6 +113,7 @@ def shortest_path(source, target):
 
   
     explored_nodes = dict()
+    explored_num = 0
     solution = None
     hit_count = dict()
     start_time = time.time()
@@ -124,13 +125,15 @@ def shortest_path(source, target):
         if frontier.empty():
             print("Hit count: ", hit_count)
             print("Time cost: ", time.time()-start_time)
+            print("Num of explored nodes: ", explored_num)
             return None if solution == None else solution[0]
             # return None if len(solutions)==0 else solutions
         
         node = frontier.remove()
         
-        # Explored (person_id, step) is recorded
-        explored_nodes[node.state] = node.step
+        # Explored {person_id:(step, movie_id)} is recorded
+        explored_nodes[node.state] = (node.step, node.action)
+        explored_num += 1
         
         
         parent_id = node.state
@@ -141,7 +144,8 @@ def shortest_path(source, target):
                 break
             
             # If can find a shorter path/step than the explored (person_id, step) for the certain person, explore it, otherwise, give it up to improve performance
-            if neighbor[1] != parent_id and not frontier.contains_state(neighbor[1]) and (neighbor[1] not in explored_nodes.keys() or node.step+1<explored_nodes[neighbor[1]]):
+            if neighbor[1] != parent_id and not frontier.contains_state(neighbor[1]) and (neighbor[1] not in explored_nodes.keys() or node.step+1 < explored_nodes[neighbor[1]][0]
+                or (node.step+1 == explored_nodes[neighbor[1]][0] and neighbor[0] != explored_nodes[neighbor[1]][1])):
                 child = Node(state=neighbor[1], action=neighbor[0], parent=node, step=node.step+1)
                 
                 if child.state == target:

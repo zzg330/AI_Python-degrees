@@ -140,7 +140,7 @@ def shortest_path(source, target):
 
         for neighbor in neighbors_for_person(parent_id):
             # If the person is 5 steps away (or even more) from the source, give it up because of Six Degrees of Kevin Bacon, and it can definitely improve the performance
-            if node.step > 5:
+            if node.step > 2:
                 break
             
             # If can find a shorter path/step than the explored (person_id, step) for the certain person, explore it, otherwise, give it up to improve performance

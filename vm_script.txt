@@ -1,0 +1,29 @@
+#Introduce how to leverage IBM Open Lab VM resource (4 cores Intel chip plus 8G memory) with 7hours free use at maximum
+
+1. Go to https://developer.ibm.com/openlabs/openshift and click lab 6: Bring Your Own Application
+2. Login IBM cloud with your account and wait for the proper resource allocated to you
+3. Click the icon on the top right corner of the terminal, and fetch the SSH login information (IP, PW and account(student))
+4. SSH to the allocated virtual machine with your local terminal
+
+5. Execute the following commands to install the proper python version (https://developers.redhat.com/blog/2018/08/13/install-python3-rhel/)
+# sudo subscription-manager repos --enable rhel-7-server-optional-rpms --enable rhel-server-rhscl-7-rpms (PW might be needed)
+# sudo yum -y install @development
+# sudo yum -y install rh-python38
+
+(Can install more python packages with the following command if needed)
+# yum -y install rh-python38-numpy rh-python38-scipy rh-python38-python-tools rh-python36-python-six
+
+6. Switch to your python env
+# scl enable rh-python38 bash
+# python -V
+Python 3.8.6
+
+# mkdir ~/pydev
+# cd ~/pydev
+# python -m vent py38-venv
+# source py38-venv/bin/activate
+# python -m pip install your_package
+
+(deactivate the python virtual env)
+# deactivate
+
